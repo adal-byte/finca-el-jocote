@@ -172,7 +172,7 @@ formDetalle.onsubmit=(e)=>{
    //recorrerlos y sumarlos 
    let total=0;
    for (let i=0; i<totalesFact.length;++i ){
-       total += parseInt(totalesFact[i]);
+       total += parseFloat(totalesFact[i]);
        console.log(`el total del bucle es: ${total}`);
    }
     //console.log(`recorrido de obj: ${sumaTotales}`)
@@ -184,7 +184,7 @@ formDetalle.onsubmit=(e)=>{
 
     FacturaTotales=(total)=>{
         console.log(`hola soy la funcion factura Total y el total acumulado es de: ${total}`)
-        totalFactura.value=total.toFixed(2);
+        totalFactura.value=total;
         SubtotalFactura.value=total;
         ExoneradototalFactura.value=total;
 
