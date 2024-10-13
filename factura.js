@@ -171,13 +171,15 @@ formDetalle.onsubmit=(e)=>{
   
    //recorrerlos y sumarlos 
    let total=0;
-   for (let i=0; i<totalesFact.length;++i ){
-       total = parseFloat(totalesFact[i]);
+   for (let i=0; i<totalesFact.length;i++ ){
+       total += parseFloat(totalesFact[i]);
+       
        console.log(`el total del bucle es: ${total}`);
    }
     //console.log(`recorrido de obj: ${sumaTotales}`)
 
     //En la facturaTotales le paso como parametro la suma de mis totales para mostrar el resultado en mi factura 
+    total = total.toFixed(2);
     FacturaTotales(total)
 
 }
