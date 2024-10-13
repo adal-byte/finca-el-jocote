@@ -117,7 +117,7 @@ const agregarDetalle=(objDetalle)=>{
     //buscar si el objeto detalle ya existia en el arregloDetalle
     
     const resultado =arregloDetalle.find((detalle)=>{
-    if(+objDetalle.producto=== +detalle.producto){
+    if(objDetalle.producto=== detalle.producto){
         return detalle
 }
 })
@@ -131,11 +131,11 @@ const agregarDetalle=(objDetalle)=>{
 
     arregloDetalle= arregloDetalle.map((detalle)=>{
         //si existe el objd detalle retorno la modificacion
-        if(+detalle.producto === +objDetalle.producto){
+        if(+detalle.producto === objDetalle.producto){
             return{
                 producto:detalle.producto,
-                pTotal:(+detalle.cant + +objDetalle.cant) * +detalle.pUnit,
-                pUnit:+detalle.pUnit
+                pTotal:(detalle.cant + objDetalle.cant) * detalle.pUnit,
+                pUnit:detalle.pUnit
             }
         }
         //si no, retorno el detalle como esta
@@ -172,7 +172,7 @@ formDetalle.onsubmit=(e)=>{
    //recorrerlos y sumarlos 
    let total=0;
    for (let i=0; i<totalesFact.length;++i ){
-       total += parseFloat(totalesFact[i]);
+       total = parseFloat(totalesFact[i]);
        console.log(`el total del bucle es: ${total}`);
    }
     //console.log(`recorrido de obj: ${sumaTotales}`)
