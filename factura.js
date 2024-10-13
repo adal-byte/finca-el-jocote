@@ -1,13 +1,13 @@
 var url = window.location.href;
 var swLocation = '/FacturaPdf/sw.js';
 
-// Registro del Service Worker
+/* Registro del Service Worker
 if (navigator.serviceWorker) {
     if (url.includes('localhost')) {
         swLocation = 'sw.js';
     }
     navigator.serviceWorker.register(swLocation);
-}
+}**/
 
 // Cabecera
 const inputNombre = document.getElementById("inputNombre");
