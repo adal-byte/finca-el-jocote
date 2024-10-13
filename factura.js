@@ -170,12 +170,17 @@ formDetalle.onsubmit=(e)=>{
     
   
    //recorrerlos y sumarlos 
-   let total=0;
-   for (let i=0; i<totalesFact.length;i++ ){
-       total += parseFloat(totalesFact[i]);
-       totalesFact=totalizarFact(2);
-       console.log(`el total del bucle es: ${total}`);
-   }
+   let total = 0;
+for (let i = 0; i < totalesFact.length; i++) {
+    total += parseFloat(totalesFact[i]);
+    console.log(`El total del bucle es: ${total}`);
+}
+
+// Llamar a `totalizarFact` una vez fuera del bucle si es necesario
+// Suponiendo que `totalizarFact` es una función que formatea o redondea el total
+totalesFact = totalizarFact(2);  // Ajustar si es necesario
+console.log(`Total final: ${total}`);
+
     //console.log(`recorrido de obj: ${sumaTotales}`)
 
     //En la facturaTotales le paso como parametro la suma de mis totales para mostrar el resultado en mi factura 
