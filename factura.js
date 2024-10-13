@@ -1,13 +1,13 @@
 var url = window.location.href;
 var swLocation = '/FacturaPdf/sw.js';
 
-/* Registro del Service Worker
+
 if (navigator.serviceWorker) {
     if (url.includes('localhost')) {
         swLocation = 'sw.js';
     }
     navigator.serviceWorker.register(swLocation);
-}**/
+}
 
 // Cabecera
 const inputNombre = document.getElementById("inputNombre");
@@ -148,12 +148,14 @@ btnGuardar.onclick = () => {
 
 // Eliminar nodo
 eliminarNodo.onclick = () => {
-    arregloDetalle = [];
-    redibujarTabla();
-    document.getElementById('SubtotalFactura').value = 0;
-    document.getElementById('totalFactura').value = 0;
-    document.getElementById('ExoneradototalFactura').value = 0;
+    arregloDetalle = []; // Reiniciar el arreglo de detalles
+    redibujarTabla(); // Redibujar la tabla de productos
+    document.getElementById('SubtotalFactura').value = 0; // Reiniciar subtotal
+    document.getElementById('totalFactura').value = 0; // Reiniciar total
+    document.getElementById('ExoneradototalFactura').value = 0; // Reiniciar exoneración total
+    location.reload(); // Recargar la página
 }
+
 
 // Calcular el precio total por producto
 const calcularprecioTotalporProducto = () => {
