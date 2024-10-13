@@ -131,7 +131,7 @@ const agregarDetalle=(objDetalle)=>{
 
     arregloDetalle= arregloDetalle.map((detalle)=>{
         //si existe el objd detalle retorno la modificacion
-        if(+detalle.producto === objDetalle.producto){
+        if(detalle.producto === objDetalle.producto){
             return{
                 producto:detalle.producto,
                 pTotal:(detalle.cant + objDetalle.cant) * detalle.pUnit,
@@ -258,7 +258,7 @@ eliminarNodo.onclick=()=>{
 
 //calcular precio total por productos agregados:
 const calcularprecioTotalporProducto=()=>{
-    inputPTotal.value=(precioUnitario.value) * +inputUnidades.value;
+    inputPTotal.value=(precioUnitario.value) * inputUnidades.value;
 }
 
 //cada vez que el usuario presione la tecla (onkeyup) haz la funcion de calcularTotal()
