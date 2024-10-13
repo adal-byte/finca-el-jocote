@@ -173,7 +173,7 @@ formDetalle.onsubmit=(e)=>{
    let total=0;
    for (let i=0; i<totalesFact.length;i++ ){
        total += parseFloat(totalesFact[i]);
-       
+       totalesFact=totalizarFact(2);
        console.log(`el total del bucle es: ${total}`);
    }
     //console.log(`recorrido de obj: ${sumaTotales}`)
