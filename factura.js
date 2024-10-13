@@ -163,7 +163,7 @@ formDetalle.onsubmit=(e)=>{
     agregarDetalle(objDetalle);
     console.log(arregloDetalle);
     redibujarTabla();
-   
+   totalesFact=totalesFact.toFixed(2);
     //obtener los totales del obj
     totalesFact.push([inputPTotal.value]);
     console.log(`total almacenado: ${totalesFact}`)
