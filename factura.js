@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const totalFactura = parseFloat(totalFacturaInput.value) || 0;
 
         doc.text(`Subtotal: $${subtotalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 60);
-        doc.text(`Total Exonerado: $${exoneradoTotal.toFixed(2)}`,40, doc.lastAutoTable.finalY + 75);
+        doc.text(`envio: $${exoneradoTotal.toFixed(2)}`,40, doc.lastAutoTable.finalY + 75);
         doc.text(`Total: $${totalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 90
     );
 
