@@ -1,241 +1,178 @@
-var url = window.location.href;
-var swLocation = '/FacturaPdf/sw.js';
+document.addEventListener("DOMContentLoaded", function () {
+    // Referencias a los elementos del DOM
+    const formDetalle = document.getElementById("formDetalle");
+    const cuerpoTabla = document.getElementById("cuerpoTabla");
+    const subtotalFacturaInput = document.getElementById("SubtotalFactura");
+    const totalFacturaInput = document.getElementById("totalFactura");
+    const exoneradoTotalFacturaInput = document.getElementById("ExoneradototalFactura");
+    const btnGenerarPdf = document.getElementById("btnGenerarPdf");
+    const resetRegistro = document.getElementById("resetRegistro");
 
 
-if (navigator.serviceWorker) {
-    if (url.includes('localhost')) {
-        swLocation = 'sw.js';
-    }
-    navigator.serviceWorker.register(swLocation);
-}
+    let subtotalFactura = 0;
 
-// Cabecera
-const inputNombre = document.getElementById("inputNombre");
-const inputRuc = document.getElementById("inputRuc");
-const inputNroControl = document.getElementById("inputNroControl");
-const inputDireccion = document.getElementById("inputDireccion");
-const inputFecha = document.getElementById("inputFecha");
-const pago = document.getElementById('pago');
-const formCabecera = document.getElementById("formCabecera");
-
-// Cuerpo de la factura
-const formDetalle = document.getElementById("formDetalle");
-const inputProducto = document.getElementById('inputProducto');
-const inputUnidades = document.getElementById('inputUnidades');
-const precioUnitario = document.getElementById('precioUnitario');
-const inputPTotal = document.getElementById("precioTotal");
-const cuerpoTabla = document.getElementById("cuerpoTabla");
-const resetRegistro = document.getElementById('resetRegistro');
-
-const SubtotalFactura = document.getElementById('SubtotalFactura');
-const ExoneradototalFactura = document.getElementById('ExoneradototalFactura');
-const totalFactura = document.getElementById("totalFactura");
-
-const btnGuardar = document.getElementById("btnGuardar");
-const btnGenerarPdf = document.getElementById('btnGenerarPdf');
-const eliminarNodo = document.getElementById('eliminarNodo');
-
-// Arreglos para almacenar los datos
-let facturas = [];
-let arregloDetalle = [];
-let totalesFact = [];
-
-// Verificar facturas en localStorage
-const verificarFacturasLocalStorage = () => {
-    const facturasLS = JSON.parse(localStorage.getItem("facturas"));
-    facturas = facturasLS || [];
-}
-
-verificarFacturasLocalStorage();
-
-// Función para redibujar la tabla de productos
-const redibujarTabla = () => {
-    cuerpoTabla.innerHTML = "";
-    arregloDetalle.forEach((detalle) => {
-        let fila = document.createElement("tr");
-        fila.innerHTML = `
-            <td>${detalle.producto}</td>
-            <td>${detalle.unidades}</td>
-            <td>${detalle.precioUnitario}</td>
-            <td>${detalle.pTotal}</td>
-        `;
-        cuerpoTabla.appendChild(fila);
-    });
-}
-
-// Función para agregar un detalle
-const agregarDetalle = (objDetalle) => {
-    const resultado = arregloDetalle.find((detalle) => {
-        return objDetalle.producto === detalle.producto;
-    });
-
-    if (resultado) {
-        // Si el producto ya existe, se suman las unidades y se recalcula el precio total
-        arregloDetalle = arregloDetalle.map((detalle) => {
-            if (detalle.producto === objDetalle.producto) {
-                const nuevasUnidades = parseInt(detalle.unidades) + parseInt(objDetalle.unidades);
-                return {
-                    ...detalle,
-                    unidades: nuevasUnidades,
-                    pTotal: (nuevasUnidades * parseFloat(detalle.precioUnitario)).toFixed(2),
-                };
-            }
-            return detalle;
-        });
-    } else {
-        arregloDetalle.push(objDetalle);
-    }
-}
-
-// Submit del detalle para agregar productos
-formDetalle.onsubmit = (e) => {
-    e.preventDefault();
-    const objDetalle = {
-        producto: inputProducto.value,
-        unidades: inputUnidades.value,
-        precioUnitario: parseFloat(precioUnitario.value).toFixed(2),
-        pTotal: (parseFloat(precioUnitario.value) * parseInt(inputUnidades.value)).toFixed(2),
+    // Calcular el precio total por producto de manera automática
+    const calcularPrecioTotal = () => {
+        const unidades = parseInt(document.getElementById("inputUnidades").value) || 0;
+        const precioUnitario = parseFloat(document.getElementById("precioUnitario").value) || 0;
+        const totalProducto = unidades * precioUnitario;
+        document.getElementById("precioTotal").value = totalProducto.toFixed(2);
     };
-    
-    agregarDetalle(objDetalle);
-    redibujarTabla();
-    
-    // Almacenar los totales
-    totalesFact.push(parseFloat(objDetalle.pTotal));
-    
-    // Sumar los totales
-    let total = 0;
-    for (let i = 0; i < totalesFact.length; i++) {
-        total += totalesFact[i];
-    }
 
-    FacturaTotales(total);
-}
+    // Escuchar cambios en la cantidad o el precio unitario
+    document.getElementById("inputUnidades").addEventListener("input", calcularPrecioTotal);
+    document.getElementById("precioUnitario").addEventListener("input", calcularPrecioTotal);
 
-// Actualizar los totales en la factura
-const FacturaTotales = (total) => {
-    totalFactura.value = total.toFixed(2);
-    SubtotalFactura.value = total.toFixed(2);
-    ExoneradototalFactura.value = total.toFixed(2);
-}
+    // Manejo del evento para agregar un producto a la tabla
+    formDetalle.addEventListener("submit", function (event) {
+        event.preventDefault();
 
-// Botón para reiniciar el registro del producto
-resetRegistro.onclick = (e) => {
-    e.preventDefault();
-    formDetalle.reset();
-    recalcularTotalFactura();
-}
+        const inputProducto = document.getElementById("inputProducto");
+        const inputUnidades = document.getElementById("inputUnidades");
+        const precioUnitario = document.getElementById("precioUnitario");
+        const precioTotal = document.getElementById("precioTotal");
 
-// Guardar la factura
-btnGuardar.onclick = () => {
-    let objFactura = {
-        nombre: inputNombre.value,
-        direccion: inputDireccion.value,
-        fecha: inputFecha.value,
-        nroControl: inputNroControl.value,
-        pago: pago.value,
-        ruc: inputRuc.value,
-        detalle: arregloDetalle,
-    }
+        // Obtener los valores ingresados
+        const producto = inputProducto.value;
+        const unidades = parseFloat(inputUnidades.value);
+        const precioUnit = parseFloat(precioUnitario.value);
+        const totalProducto = parseFloat(precioTotal.value);
 
-    facturas.push(objFactura);
-    formCabecera.reset();
-    formDetalle.reset();
-    localStorage.setItem("facturas", JSON.stringify(facturas));
-    arregloDetalle = [];
-    redibujarTabla();
-}
-
-// Eliminar nodo
-eliminarNodo.onclick = () => {
-    arregloDetalle = []; // Reiniciar el arreglo de detalles
-    redibujarTabla(); // Redibujar la tabla de productos
-    document.getElementById('SubtotalFactura').value = 0; // Reiniciar subtotal
-    document.getElementById('totalFactura').value = 0; // Reiniciar total
-    document.getElementById('ExoneradototalFactura').value = 0; // Reiniciar exoneración total
-    location.reload(); // Recargar la página
-}
-
-
-// Calcular el precio total por producto
-const calcularprecioTotalporProducto = () => {
-    inputPTotal.value = (parseFloat(precioUnitario.value) * parseInt(inputUnidades.value)).toFixed(2);
-}
-
-inputUnidades.onkeyup = calcularprecioTotalporProducto;
-precioUnitario.onchange = calcularprecioTotalporProducto;
-inputUnidades.onchange = calcularprecioTotalporProducto;
-
-// Función para cargar imagen
-function loadImage(url) {
-    return new Promise(resolve => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'blob';
-        xhr.onload = function (e) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const res = event.target.result;
-                resolve(res);
-            }
-            const file = this.response;
-            reader.readAsDataURL(file);
+        if (!producto || unidades <= 0 || precioUnit <= 0 || totalProducto <= 0) {
+            alert("Por favor, complete los datos correctamente.");
+            return;
         }
-        xhr.send();
+
+        // Actualizar el subtotal de la factura
+        subtotalFactura += totalProducto;
+        subtotalFacturaInput.value = subtotalFactura.toFixed(2);
+
+        // Recalcular el total de la factura
+        actualizarTotal();
+
+        // Crear una nueva fila para la tabla
+        const nuevaFila = document.createElement("tr");
+        nuevaFila.innerHTML = `
+            <td>${producto}</td>
+            <td>${unidades}</td>
+            <td>${precioUnit.toFixed(2)}</td>
+            <td>${totalProducto.toFixed(2)}</td>
+        `;
+
+        // Agregar la fila al cuerpo de la tabla
+        cuerpoTabla.appendChild(nuevaFila);
+
+        // Limpiar los campos del formulario
+        inputProducto.value = "";
+        inputUnidades.value = "";
+        precioUnitario.value = "";
+        precioTotal.value = "";
     });
-}
 
-// Generar PDF
-btnGenerarPdf.onclick = async () => {
-    const inputNombre = document.getElementById("inputNombre").value;
-    const inputRuc = document.getElementById("inputRuc").value;
-    const inputNroControl = document.getElementById("inputNroControl").value;
-    const inputDireccion = document.getElementById("inputDireccion").value;
-    const inputFecha = document.getElementById("inputFecha").value;
-    const pago = document.getElementById('pago').value;
-    const totalFactura = document.getElementById("totalFactura").value;
-    const SubtotalFactura = document.getElementById('SubtotalFactura').value;
-    const ExoneradototalFactura = document.getElementById('ExoneradototalFactura').value;
+    // Función para recalcular el total de la factura
+    function actualizarTotal() {
+        const exoneradoTotal = parseFloat(exoneradoTotalFacturaInput.value) || 0; // Total exonerado
+        const total = subtotalFactura + exoneradoTotal; // Subtotal + Exonerado
+        totalFacturaInput.value = total.toFixed(2); // Actualizar el total
+    }
 
-    generatePdf(inputNombre, inputRuc, inputNroControl, inputDireccion, inputFecha, pago, totalFactura, SubtotalFactura, ExoneradototalFactura);
-}
+    // Escuchar cambios en el campo "Exonerado"
+    exoneradoTotalFacturaInput.addEventListener("input", actualizarTotal);
 
-// Función para generar el PDF
-async function generatePdf(inputNombre, inputRuc, inputNroControl, inputDireccion, inputFecha, pago, totalFactura, SubtotalFactura, ExoneradototalFactura) {
-    const image = await loadImage('factura.jpg');
-    const pdf = new jsPDF('p', 'pt', 'letter');
+    // Botón para reiniciar el registro del producto
+    resetRegistro.addEventListener("click", function (e) {
+        e.preventDefault();
+        formDetalle.reset();
+        recalcularTotales();
+    });
+
+    // Función para reiniciar los totales
+    function recalcularTotales() {
+        subtotalFactura = 0;
+        subtotalFacturaInput.value = "0.00";
+        totalFacturaInput.value = "0.00";
+        exoneradoTotalFacturaInput.value = "0.00";
+    }
+
+    // Función para generar el PDF
+    btnGenerarPdf.addEventListener("click", async function () {
+        const doc = new jsPDF('p', 'pt', 'letter');
+
+        // Cargar la imagen de fondo (factura.jpg)
+        const image = await loadImage('factura.jpg'); // Asegúrate de tener la imagen factura.jpg
+        
+        doc.addImage(image, 'PNG', 0, 0, 615, 792);
     
-    pdf.addImage(image, 'PNG', 0, 0, 615, 792);
-    pdf.setFontSize(12);
+        // Título del PDF
+        doc.setFontSize(12);
+      
 
-    // Colocación de los campos en el PDF
-    pdf.text(inputFecha, 140, 100);
-    pdf.text(inputRuc, 140, 115);
-    pdf.text(inputNombre, 140, 133);
-    pdf.text(inputNroControl, 490, 75);
-    pdf.text(inputDireccion, 140, 150);
-    pdf.text(pago, 310, 100);
-    pdf.text(totalFactura, 210, 555);
+        // Información general de la factura
+        const nroControl = document.getElementById("inputNroControl").value || "N/A";
+        const DUI = document.getElementById("inputRuc").value || "N/A";
+        const nombreCliente = document.getElementById("inputNombre").value || "N/A";
+        const fecha = document.getElementById("inputFecha").value || "N/A";
+        const direccion = document.getElementById("inputDireccion").value || "N/A";
+        const formaPago = document.getElementById("pago").value || "N/A";
 
-    pdf.autoTable({
-        html: '#cuerpoTabla',
-        startY: 209,
-        theme: 'grid',
-        columnStyles: {
-            0: { cellWidth: 255 },
-            1: { cellWidth: 83 },
-            2: { cellWidth: 62 },
-            3: { cellWidth: 83 }
-        },
-        styles: {
-            minCellHeight: 40,
-            textColor: [0, 0, 0],
-            fillColor: [255, 255, 255],
-            halign: 'center',
-            valign: 'middle'
-        },
-        margin: { left: 78 }
+        doc.setFontSize(12);
+        doc.text(`${DUI}`,140,115);
+        doc.text(` ${nroControl}`, 490, 75);
+        doc.text(`${nombreCliente}`, 140, 133);
+        doc.text(`${fecha}`, 140, 100);
+        doc.text(` ${direccion}`, 140, 150);
+        doc.text(` ${formaPago}`,310, 100);
+        // Generar tabla de productos
+        const rows = [];
+        cuerpoTabla.querySelectorAll("tr").forEach((row) => {
+            const cols = row.querySelectorAll("td");
+            const producto = cols[0]?.innerText || "";
+            const unidades = cols[1]?.innerText || "";
+            const precioUnit = cols[2]?.innerText || "";
+            const totalProducto = cols[3]?.innerText || "";
+            rows.push([producto, unidades, precioUnit, totalProducto]); // Agregar datos de cada fila
+        });
+
+        doc.autoTable({
+            head: [["Producto", "Unidades", "Precio Unitario", "Total"]],  // Encabezados de la tabla
+            body: rows, // Cuerpo de la tabla con los datos
+            startY: 209,  // Ajustar la posición de inicio de la tabla
+            headStyles: {
+                fillColor: [193, 140, 30],  // Color de fondo (por ejemplo, Azul en formato RGB)
+                textColor: [255, 255, 255],  // Color del texto (Blanco en formato RGB)
+                fontStyle: 'bold'  // Estilo de fuente (negrita en este caso)
+            }
+        });
+
+        // Totales
+        const exoneradoTotal = parseFloat(exoneradoTotalFacturaInput.value) || 0;
+        const totalFactura = parseFloat(totalFacturaInput.value) || 0;
+
+        doc.text(`Subtotal: $${subtotalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 60);
+        doc.text(`Total Exonerado: $${exoneradoTotal.toFixed(2)}`,40, doc.lastAutoTable.finalY + 75);
+        doc.text(`Total: $${totalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 90
+    );
+
+        // Guardar PDF
+        doc.save("factura.pdf");
     });
 
-    pdf.save('factura.pdf');
-}
+    // Función para cargar la imagen
+    function loadImage(url) {
+        return new Promise(resolve => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'blob';
+            xhr.onload = function () {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const res = event.target.result;
+                    resolve(res);
+                }
+                const file = this.response;
+                reader.readAsDataURL(file);
+            }
+            xhr.send();
+        });
+    }
+});
