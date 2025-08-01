@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const cuerpoTabla = document.getElementById("cuerpoTabla");
     const subtotalFacturaInput = document.getElementById("SubtotalFactura");
     const totalFacturaInput = document.getElementById("totalFactura");
-    const envioInput = document.getElementById("envio");
+    const envioInputInput = document.getElementById("envio");
     const btnGenerarPdf = document.getElementById("btnGenerarPdf");
     const resetRegistro = document.getElementById("resetRegistro");
 
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función para recalcular el total de la factura
     function actualizarTotal() {
         const envio = parseFloat(envioInput.value) ; // Total exonerado
-        const total = subtotalFactura + envioInput; // Subtotal + Exonerado
+        const total = subtotalFactura + envio; // Subtotal + Exonerado
         totalFacturaInput.value = total.toFixed(2); // Actualizar el total
     }
 
@@ -175,28 +175,4 @@ document.addEventListener("DOMContentLoaded", function () {
             xhr.send();
         });
     }
-});
-
-
-function actualizarTotalConEnvio() {
-    const filas = document.querySelectorAll('#cuerpoTabla tr');
-    let subtotal = 0;
-
-    filas.forEach(fila => {
-        const celdaTotal = fila.querySelectorAll('td')[3];
-        if (celdaTotal) {
-            subtotal += parseFloat(celdaTotal.textContent) || 0;
-        }
-    });
-
-    const envio = parseFloat(document.getElementById('envio').value) || 0;
-    const total = subtotal + envio;
-
-    document.getElementById('SubtotalFactura').value = subtotal.toFixed(2);
-    document.getElementById('totalFactura').value = total.toFixed(2);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const envioInput = document.getElementById('envio');
-    envioInput.addEventListener('input', actualizarTotalConEnvio);
 });
