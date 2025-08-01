@@ -154,7 +154,17 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
         // Guardar PDF
-        doc.save("factura.pdf");
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'factura.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
     });
 
     // Función para cargar la imagen
