@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const cuerpoTabla = document.getElementById("cuerpoTabla");
     const subtotalFacturaInput = document.getElementById("SubtotalFactura");
     const totalFacturaInput = document.getElementById("totalFactura");
-    const envioInputInput = document.getElementById("envio");
+    const exoneradoTotalFacturaInput = document.getElementById("ExoneradototalFactura");
     const btnGenerarPdf = document.getElementById("btnGenerarPdf");
     const resetRegistro = document.getElementById("resetRegistro");
 
@@ -71,8 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para recalcular el total de la factura
     function actualizarTotal() {
-        const envio = parseFloat(envioInput.value) ; // Total exonerado
-        const total = subtotalFactura + envio; // Subtotal + Exonerado
+        const exoneradoTotal = parseFloat(exoneradoTotalFacturaInput.value) || 0; // Total exonerado
+        const total = subtotalFactura + exoneradoTotal; // Subtotal + Exonerado
         totalFacturaInput.value = total.toFixed(2); // Actualizar el total
     }
 
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
         subtotalFactura = 0;
         subtotalFacturaInput.value = "0.00";
         totalFacturaInput.value = "0.00";
-        envioInput.value = "0.00";
+        exoneradoTotalFacturaInput.value = "0.00";
     }
 
     // Función para generar el PDF
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const totalFactura = parseFloat(totalFacturaInput.value) || 0;
 
         doc.text(`Subtotal: $${subtotalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 60);
-        doc.text(`envio: $${envio.toFixed(2)}`,40, doc.lastAutoTable.finalY + 75);
+        doc.text(`envio: $${exoneradoTotal.toFixed(2)}`,40, doc.lastAutoTable.finalY + 75);
         doc.text(`Total: $${totalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 90
     );
 
