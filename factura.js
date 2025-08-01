@@ -147,23 +147,13 @@ document.addEventListener("DOMContentLoaded", function () {
         // Totales
         const totalFactura = parseFloat(totalFacturaInput.value) || 0;
 
-        doc.text(`Subtotal: $${subtotalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 60);
+        doc.text(`Subtotal:$${subtotalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 60);
         doc.text(`envio: $${envio.toFixed(2)}`,40, doc.lastAutoTable.finalY + 75);
         doc.text(`Total: $${totalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 90
     );
 
         // Guardar PDF
-        const blob = doc.output('blob');
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'factura.pdf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
+        doc.save("factura.pdf");
     });
 
     // Función para cargar la imagen
