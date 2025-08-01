@@ -145,7 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // Totales
-        const exoneradoTotal = parseFloat(exoneradoTotalFacturaInput.value) || 0;
         const totalFactura = parseFloat(totalFacturaInput.value) || 0;
 
         doc.text(`Subtotal: $${subtotalFactura.toFixed(2)}`, 40, doc.lastAutoTable.finalY + 60);
