@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función para recalcular el total de la factura
     function actualizarTotal() {
         const envio = parseFloat(envioInput.value) ; // Total exonerado
-        const total = subtotalFactura + envio; // Subtotal + Exonerado
+        const total = subtotalFactura + envioInput; // Subtotal + Exonerado
         totalFacturaInput.value = total.toFixed(2); // Actualizar el total
     }
 
